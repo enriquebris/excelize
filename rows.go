@@ -33,6 +33,7 @@ func (f *File) GetRows(sheet string) [][]string {
 	d := f.sharedStringsReader()
 	var inElement string
 	var r xlsxRow
+	/*
 	var row []string
 	tr, tc := f.getTotalRowsCols(name)
 	for i := 0; i < tr; i++ {
@@ -42,6 +43,10 @@ func (f *File) GetRows(sheet string) [][]string {
 		}
 		rows = append(rows, row)
 	}
+	*/
+
+	_, tc := f.getTotalRowsCols(name)
+
 	decoder = xml.NewDecoder(strings.NewReader(f.readXML(name)))
 	for {
 		token, _ := decoder.Token()
@@ -54,11 +59,28 @@ func (f *File) GetRows(sheet string) [][]string {
 			if inElement == "row" {
 				r = xlsxRow{}
 				decoder.DecodeElement(&r, &startElement)
-				cr := r.R - 1
+				//cr := r.R - 1
+
+				// initialize the temp row
+				row := []string{}
+				for j := 0; j <= tc; j++ {
+					row = append(row, "")
+				}
+				isEmptyRow := true
+
 				for _, colCell := range r.C {
 					c := TitleToNumber(strings.Map(letterOnlyMapF, colCell.R))
 					val, _ := colCell.getValueFrom(f, d)
-					rows[cr][c] = val
+					//rows[cr][c] = val
+					row[c] = val
+					if strings.TrimSpace(val) != "" {
+						isEmptyRow = false
+					}
+				}
+
+				// adds the row to rows if it is not empty
+				if !isEmptyRow {
+					rows = append(rows, row)
 				}
 			}
 		default:
