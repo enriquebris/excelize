@@ -129,6 +129,40 @@ func (f *File) SetCellBool(sheet, axis string, value bool) {
 }
 
 // GetCellValue provides function to get formatted value from cell by given
+// worksheet name and axis in XLSX file. It applies the given format to the cell.
+func (f *File) GetCellValueWithFormat(sheet string, axis string, style int) string {
+	xlsx := f.workSheetReader(sheet)
+	axis = f.mergeCellsParser(xlsx, axis)
+	row, err := strconv.Atoi(strings.Map(intOnlyMapF, axis))
+	if err != nil {
+		return ""
+	}
+	xAxis := row - 1
+	rows := len(xlsx.SheetData.Row)
+	if rows > 1 {
+		lastRow := xlsx.SheetData.Row[rows-1].R
+		if lastRow >= rows {
+			rows = lastRow
+		}
+	}
+	if rows < xAxis {
+		return ""
+	}
+	for k := range xlsx.SheetData.Row {
+		if xlsx.SheetData.Row[k].R == row {
+			for i := range xlsx.SheetData.Row[k].C {
+				if axis == xlsx.SheetData.Row[k].C[i].R {
+					xlsx.SheetData.Row[k].C[i].S = style
+					val, _ := xlsx.SheetData.Row[k].C[i].getValueFrom(f, f.sharedStringsReader())
+					return val
+				}
+			}
+		}
+	}
+	return ""
+}
+
+// GetCellValue provides function to get formatted value from cell by given
 // worksheet name and axis in XLSX file. If it is possible to apply a format to
 // the cell value, it will do so, if not then an error will be returned, along
 // with the raw value of the cell.
