@@ -5,14 +5,14 @@ import "encoding/xml"
 // xlsxStyleSheet directly maps the stylesheet element in the namespace
 // http://schemas.openxmlformats.org/spreadsheetml/2006/main - currently I have
 // not checked it for completeness - it does as much as I need.
-type xlsxStyleSheet struct {
+type XlsxStyleSheet struct {
 	XMLName      xml.Name          `xml:"http://schemas.openxmlformats.org/spreadsheetml/2006/main styleSheet"`
-	NumFmts      *xlsxNumFmts      `xml:"numFmts,omitempty"`
+	NumFmts      *XlsxNumFmts      `xml:"numFmts,omitempty"`
 	Fonts        *xlsxFonts        `xml:"fonts,omitempty"`
 	Fills        *xlsxFills        `xml:"fills,omitempty"`
 	Borders      *xlsxBorders      `xml:"borders,omitempty"`
 	CellStyleXfs *xlsxCellStyleXfs `xml:"cellStyleXfs,omitempty"`
-	CellXfs      *xlsxCellXfs      `xml:"cellXfs,omitempty"`
+	CellXfs      *XlsxCellXfs      `xml:"cellXfs,omitempty"`
 	CellStyles   *xlsxCellStyles   `xml:"cellStyles,omitempty"`
 	Dxfs         *xlsxDxfs         `xml:"dxfs,omitempty"`
 	TableStyles  *xlsxTableStyles  `xml:"tableStyles,omitempty"`
@@ -23,7 +23,7 @@ type xlsxStyleSheet struct {
 // xlsxAlignment formatting information pertaining to text alignment in cells.
 // There are a variety of choices for how text is aligned both horizontally and
 // vertically, as well as indentation settings, and so on.
-type xlsxAlignment struct {
+type XlsxAlignment struct {
 	Horizontal      string `xml:"horizontal,attr,omitempty"`
 	Indent          int    `xml:"indent,attr,omitempty"`
 	JustifyLastLine bool   `xml:"justifyLastLine,attr,omitempty"`
@@ -39,7 +39,7 @@ type xlsxAlignment struct {
 // associated with the cell. Each cell has protection properties that can be
 // set. The cell protection properties do not take effect unless the sheet has
 // been protected.
-type xlsxProtection struct {
+type XlsxProtection struct {
 	Hidden bool `xml:"hidden,attr"`
 	Locked bool `xml:"locked,attr"`
 }
@@ -199,12 +199,12 @@ type xlsxCellStyle struct {
 // aspects of formatting.
 type xlsxCellStyleXfs struct {
 	Count int      `xml:"count,attr"`
-	Xf    []xlsxXf `xml:"xf,omitempty"`
+	Xf    []XlsxXf `xml:"xf,omitempty"`
 }
 
 // xlsxXf directly maps the xf element. A single xf element describes all of the
 // formatting for a cell.
-type xlsxXf struct {
+type XlsxXf struct {
 	ApplyAlignment    bool            `xml:"applyAlignment,attr"`
 	ApplyBorder       bool            `xml:"applyBorder,attr"`
 	ApplyFill         bool            `xml:"applyFill,attr"`
@@ -218,8 +218,8 @@ type xlsxXf struct {
 	PivotButton       bool            `xml:"pivotButton,attr,omitempty"`
 	QuotePrefix       bool            `xml:"quotePrefix,attr,omitempty"`
 	XfID              *int            `xml:"xfId,attr"`
-	Alignment         *xlsxAlignment  `xml:"alignment"`
-	Protection        *xlsxProtection `xml:"protection"`
+	Alignment         *XlsxAlignment  `xml:"alignment"`
+	Protection        *XlsxProtection `xml:"protection"`
 }
 
 // xlsxCellXfs directly maps the cellXfs element. This element contains the
@@ -227,9 +227,9 @@ type xlsxXf struct {
 // in this workbook. These records are the starting point for determining the
 // formatting for a cell. Cells in the Sheet Part reference the xf records by
 // zero-based index.
-type xlsxCellXfs struct {
+type XlsxCellXfs struct {
 	Count int      `xml:"count,attr"`
-	Xf    []xlsxXf `xml:"xf,omitempty"`
+	Xf    []XlsxXf `xml:"xf,omitempty"`
 }
 
 // xlsxDxfs directly maps the dxfs element. This element contains the master
@@ -254,11 +254,11 @@ type xlsxDxf struct {
 // dxf directly maps the dxf element.
 type dxf struct {
 	Font       *font           `xml:"font"`
-	NumFmt     *xlsxNumFmt     `xml:"numFmt"`
+	NumFmt     *XlsxNumFmt     `xml:"numFmt"`
 	Fill       *xlsxFill       `xml:"fill"`
-	Alignment  *xlsxAlignment  `xml:"alignment"`
+	Alignment  *XlsxAlignment  `xml:"alignment"`
 	Border     *xlsxBorder     `xml:"border"`
-	Protection *xlsxProtection `xml:"protection"`
+	Protection *XlsxProtection `xml:"protection"`
 	ExtLst     *xlsxExt        `xml:"extLst"`
 }
 
@@ -288,15 +288,15 @@ type xlsxTableStyle struct {
 // number formats in this workbook, consisting of a sequence of numFmt records,
 // where each numFmt record defines a particular number format, indicating how
 // to format and render the numeric value of a cell.
-type xlsxNumFmts struct {
+type XlsxNumFmts struct {
 	Count  int           `xml:"count,attr"`
-	NumFmt []*xlsxNumFmt `xml:"numFmt,omitempty"`
+	NumFmt []*XlsxNumFmt `xml:"numFmt,omitempty"`
 }
 
 // xlsxNumFmt directly maps the numFmt element. This element specifies number
 // format properties which indicate how to format and render the numeric value
 // of a cell.
-type xlsxNumFmt struct {
+type XlsxNumFmt struct {
 	NumFmtID   int    `xml:"numFmtId,attr,omitempty"`
 	FormatCode string `xml:"formatCode,attr,omitempty"`
 }
