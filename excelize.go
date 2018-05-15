@@ -20,7 +20,7 @@ type File struct {
 	SharedStrings *xlsxSST
 	Sheet         map[string]*xlsxWorksheet
 	SheetCount    int
-	Styles        *xlsxStyleSheet
+	Styles        *XlsxStyleSheet
 	WorkBook      *xlsxWorkbook
 	WorkBookRels  *xlsxWorkbookRels
 	XLSX          map[string]string

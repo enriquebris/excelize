@@ -985,9 +985,9 @@ func is12HourTime(format string) bool {
 
 // stylesReader provides function to get the pointer to the structure after
 // deserialization of xl/styles.xml.
-func (f *File) stylesReader() *xlsxStyleSheet {
+func (f *File) stylesReader() *XlsxStyleSheet {
 	if f.Styles == nil {
-		var styleSheet xlsxStyleSheet
+		var styleSheet XlsxStyleSheet
 		xml.Unmarshal([]byte(f.readXML("xl/styles.xml")), &styleSheet)
 		f.Styles = &styleSheet
 	}
@@ -1965,7 +1965,7 @@ func setFont(formatStyle *formatStyle) *font {
 
 // setNumFmt provides function to check if number format code in the range of
 // built-in values.
-func setNumFmt(style *xlsxStyleSheet, formatStyle *formatStyle) int {
+func setNumFmt(style *XlsxStyleSheet, formatStyle *formatStyle) int {
 	dp := "0."
 	numFmtID := 164 // Default custom number format code from 164.
 	if formatStyle.DecimalPlaces < 0 || formatStyle.DecimalPlaces > 30 {
@@ -1989,19 +1989,19 @@ func setNumFmt(style *xlsxStyleSheet, formatStyle *formatStyle) int {
 		}
 		if style.NumFmts != nil {
 			numFmtID = style.NumFmts.NumFmt[len(style.NumFmts.NumFmt)-1].NumFmtID + 1
-			nf := xlsxNumFmt{
+			nf := XlsxNumFmt{
 				FormatCode: fc,
 				NumFmtID:   numFmtID,
 			}
 			style.NumFmts.NumFmt = append(style.NumFmts.NumFmt, &nf)
 			style.NumFmts.Count++
 		} else {
-			nf := xlsxNumFmt{
+			nf := XlsxNumFmt{
 				FormatCode: fc,
 				NumFmtID:   numFmtID,
 			}
-			numFmts := xlsxNumFmts{
-				NumFmt: []*xlsxNumFmt{&nf},
+			numFmts := XlsxNumFmts{
+				NumFmt: []*XlsxNumFmt{&nf},
 				Count:  1,
 			}
 			style.NumFmts = &numFmts
@@ -2012,16 +2012,16 @@ func setNumFmt(style *xlsxStyleSheet, formatStyle *formatStyle) int {
 }
 
 // setCustomNumFmt provides function to set custom number format code.
-func setCustomNumFmt(style *xlsxStyleSheet, formatStyle *formatStyle) int {
-	nf := xlsxNumFmt{FormatCode: *formatStyle.CustomNumFmt}
+func setCustomNumFmt(style *XlsxStyleSheet, formatStyle *formatStyle) int {
+	nf := XlsxNumFmt{FormatCode: *formatStyle.CustomNumFmt}
 	if style.NumFmts != nil {
 		nf.NumFmtID = style.NumFmts.NumFmt[len(style.NumFmts.NumFmt)-1].NumFmtID + 1
 		style.NumFmts.NumFmt = append(style.NumFmts.NumFmt, &nf)
 		style.NumFmts.Count++
 	} else {
 		nf.NumFmtID = 164
-		numFmts := xlsxNumFmts{
-			NumFmt: []*xlsxNumFmt{&nf},
+		numFmts := XlsxNumFmts{
+			NumFmt: []*XlsxNumFmt{&nf},
 			Count:  1,
 		}
 		style.NumFmts = &numFmts
@@ -2030,7 +2030,7 @@ func setCustomNumFmt(style *xlsxStyleSheet, formatStyle *formatStyle) int {
 }
 
 // setLangNumFmt provides function to set number format code with language.
-func setLangNumFmt(style *xlsxStyleSheet, formatStyle *formatStyle) int {
+func setLangNumFmt(style *XlsxStyleSheet, formatStyle *formatStyle) int {
 	numFmts, ok := langNumFmt[formatStyle.Lang]
 	if !ok {
 		return 0
@@ -2040,15 +2040,15 @@ func setLangNumFmt(style *xlsxStyleSheet, formatStyle *formatStyle) int {
 	if !ok {
 		return 0
 	}
-	nf := xlsxNumFmt{FormatCode: fc}
+	nf := XlsxNumFmt{FormatCode: fc}
 	if style.NumFmts != nil {
 		nf.NumFmtID = style.NumFmts.NumFmt[len(style.NumFmts.NumFmt)-1].NumFmtID + 1
 		style.NumFmts.NumFmt = append(style.NumFmts.NumFmt, &nf)
 		style.NumFmts.Count++
 	} else {
 		nf.NumFmtID = formatStyle.NumFmt
-		numFmts := xlsxNumFmts{
-			NumFmt: []*xlsxNumFmt{&nf},
+		numFmts := XlsxNumFmts{
+			NumFmt: []*XlsxNumFmt{&nf},
 			Count:  1,
 		}
 		style.NumFmts = &numFmts
@@ -2140,8 +2140,8 @@ func setFills(formatStyle *formatStyle, fg bool) *xlsxFill {
 // setAlignment provides function to formatting information pertaining to text
 // alignment in cells. There are a variety of choices for how text is aligned
 // both horizontally and vertically, as well as indentation settings, and so on.
-func setAlignment(formatStyle *formatStyle) *xlsxAlignment {
-	var alignment xlsxAlignment
+func setAlignment(formatStyle *formatStyle) *XlsxAlignment {
+	var alignment XlsxAlignment
 	if formatStyle.Alignment != nil {
 		alignment.Horizontal = formatStyle.Alignment.Horizontal
 		alignment.Indent = formatStyle.Alignment.Indent
@@ -2158,8 +2158,8 @@ func setAlignment(formatStyle *formatStyle) *xlsxAlignment {
 
 // setProtection provides function to set protection properties associated
 // with the cell.
-func setProtection(formatStyle *formatStyle) *xlsxProtection {
-	var protection xlsxProtection
+func setProtection(formatStyle *formatStyle) *XlsxProtection {
+	var protection XlsxProtection
 	if formatStyle.Protection != nil {
 		protection.Hidden = formatStyle.Protection.Hidden
 		protection.Locked = formatStyle.Protection.Locked
@@ -2221,8 +2221,8 @@ func setBorders(formatStyle *formatStyle) *xlsxBorder {
 
 // setCellXfs provides function to set describes all of the formatting for a
 // cell.
-func setCellXfs(style *xlsxStyleSheet, fontID, numFmtID, fillID, borderID int, applyAlignment, applyProtection bool, alignment *xlsxAlignment, protection *xlsxProtection) int {
-	var xf xlsxXf
+func setCellXfs(style *XlsxStyleSheet, fontID, numFmtID, fillID, borderID int, applyAlignment, applyProtection bool, alignment *XlsxAlignment, protection *XlsxProtection) int {
+	var xf XlsxXf
 	xf.FontID = fontID
 	if fontID != 0 {
 		xf.ApplyFont = true
