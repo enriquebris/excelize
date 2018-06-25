@@ -7,7 +7,10 @@ import (
 	"math"
 	"strconv"
 	"strings"
+	"regexp"
 )
+
+var decimalFormatRegex *regexp.Regexp
 
 // Excel styles can reference number formats that are built-in, all of which
 // have an id less than 164. This is a possibly incomplete list comprised of as
@@ -853,6 +856,45 @@ func formatToFloat(i int, v string) string {
 		return v
 	}
 	return fmt.Sprintf("%.2f", f)
+}
+
+// formatToFloatCustom formats the value as the given float format
+func formatToFloatCustom(v string, formatCode string) string {
+	f, err := strconv.ParseFloat(v, 64)
+	if err != nil {
+		return v
+	}
+
+	decimals, err := getDecimalsFromFormat(formatCode)
+	if err != nil {
+		return v
+	}
+
+	formatTmp := "%." + fmt.Sprintf("%v", decimals) + "f";
+	return fmt.Sprintf(formatTmp, f)
+
+}
+
+// getDecimalsFromFormat returns the number of decimal values in the format
+func getDecimalsFromFormat(formatCode string) (int, error) {
+
+	if decimalFormatRegex == nil {
+		var err error
+		pattern := `^0\.([0]{1,50})$`
+		decimalFormatRegex, err = regexp.Compile(pattern)
+
+		if err != nil {
+			fmt.Println(err)
+			return 0, err
+		}
+	}
+
+	groups := decimalFormatRegex.FindAllStringSubmatch(formatCode, 1)
+	if len(groups) > 0 {
+		return len(groups[0][1]), nil
+	}
+
+	return 0, fmt.Errorf("No decimals at: '%v'", formatCode)
 }
 
 // formatToA provides function to convert original string to special format as

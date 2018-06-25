@@ -209,6 +209,16 @@ func (f *File) formattedValue(s int, v string) string {
 	if ok != nil {
 		return ok(styleSheet.CellXfs.Xf[s].NumFmtID, v)
 	}
+
+	numFmtID := styleSheet.CellXfs.Xf[s].NumFmtID
+	// try to apply the format
+	for i:=0; i<len(styleSheet.NumFmts.NumFmt); i++ {
+		if numFmtID == styleSheet.NumFmts.NumFmt[i].NumFmtID {
+			// format the number based on styleSheet.NumFmts.NumFmt[i].FormatCode
+			return formatToFloatCustom(v, styleSheet.NumFmts.NumFmt[i].FormatCode)
+		}
+	}
+
 	return v
 }
 
